@@ -1,0 +1,12 @@
+🖥️ Smart Parking Dashboard
+
+Web-based control and monitoring interface:
+- Real-time parking spot visualization
+- Live sensor data updates
+- Alert management system
+- Statistics and analytics
+- Mobile-responsive design
+- Arabic RTL support
+
+Built with Flask + Bootstrap + JavaScript
+Updates every 2 seconds with latest sensor data

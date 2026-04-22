@@ -1,0 +1,12 @@
+🚗 Smart Parking IoT Sensor
+
+This image represents our advanced parking sensor that monitors:
+- Vehicle presence detection
+- Temperature monitoring (15-40°C range)
+- Humidity sensing (30-80% range)
+- Battery level tracking
+- Signal strength monitoring
+- MQTT communication
+
+Built with Python + paho-mqtt + Docker
+Real-time data transmission every 2-3 seconds

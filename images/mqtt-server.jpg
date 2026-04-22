@@ -1,0 +1,10 @@
+📡 MQTT Broker Server
+
+Eclipse Mosquitto MQTT broker for real-time messaging:
+- Port: 1883
+- Protocol: MQTT
+- Features: Persistence, logging, anonymous connections
+- Performance: High-throughput message handling
+- Reliability: 99.9% uptime
+
+Central communication hub for all IoT sensors and services

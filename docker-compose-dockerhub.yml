@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # MQTT Broker (Eclipse Mosquitto)
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: mosquitto-broker
+    ports:
+      - "1883:1883"
+    volumes:
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    restart: unless-stopped
+    networks:
+      - iot-network
+
+  # Smart Parking Server (Subscriber)
+  server:
+    image: fronre/smart-parking-iot-server:latest
+    container_name: parking-server
+    depends_on:
+      - mosquitto
+    restart: unless-stopped
+    networks:
+      - iot-network
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  # Smart Parking Sensor (Publisher)
+  sensor:
+    image: fronre/smart-parking-iot-sensor:latest
+    container_name: parking-sensor
+    depends_on:
+      - mosquitto
+      - server
+    restart: unless-stopped
+    networks:
+      - iot-network
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  # Web Dashboard
+  web:
+    image: fronre/smart-parking-iot-web:latest
+    container_name: parking-web
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mosquitto
+    restart: unless-stopped
+    networks:
+      - iot-network
+    environment:
+      - PYTHONUNBUFFERED=1
+
+volumes:
+  mosquitto_data:
+    driver: local
+  mosquitto_log:
+    driver: local
+
+networks:
+  iot-network:
+    driver: bridge

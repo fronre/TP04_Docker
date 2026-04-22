@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # MQTT Broker (Eclipse Mosquitto)
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: mosquitto-broker
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    restart: unless-stopped
+    networks:
+      - iot-network
+    
+  # Smart Parking Server (Subscriber)
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: parking-server
+    depends_on:
+      - mosquitto
+    restart: unless-stopped
+    networks:
+      - iot-network
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./server:/app
+
+  # Smart Parking Sensor (Publisher)
+  sensor:
+    build:
+      context: ./sensor
+      dockerfile: Dockerfile
+    container_name: parking-sensor
+    depends_on:
+      - mosquitto
+      - server
+    restart: unless-stopped
+    networks:
+      - iot-network
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./sensor:/app
+
+  # Web Dashboard
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: parking-web
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mosquitto
+    restart: unless-stopped
+    networks:
+      - iot-network
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./web:/app
+
+# Named volumes for data persistence
+volumes:
+  mosquitto_data:
+    driver: local
+  mosquitto_log:
+    driver: local
+
+# Custom network for IoT communication
+networks:
+  iot-network:
+    driver: bridge
